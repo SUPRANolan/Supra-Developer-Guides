@@ -6,11 +6,11 @@
 
 Have you ever wanted to monitor the events of a smart contract from an off-chain application? Well you're in luck! The Ethers.js library allows us to interact with the Ethereum Blockchain in just a few lines of code. 
 
-In this guide, we’ll be using Node.js and Ethers to listen to the SupraOracles Price Feed smart contract on Ethereum Goerli testnet to tell us every time the S-Value is updated. Then, we’ll call the checkPrice() function of the contract to find the updated value of any pair and output it to the console each time the event occurs.
+In this guide, we’ll be using Node.js and Ethers to listen to the SupraOracles Price Feed smart contract on Ethereum Goerli testnet to tell us every time the S-Value is updated. Then, we’ll call the `checkPrice()` function of the contract to find the updated value of any pair and output it to the console each time the event occurs.
 
 # Getting Started
 
-First things first, initialize a new project through your preferred IDE's terminal. We’ll be passing the -y argument to automatically accept the default values for the initialization process.
+First things first, initialize a new project through your preferred IDE's terminal. We’ll be passing the `-y` argument to automatically accept the default values for the initialization process.
 
 ```
 npm init -y
@@ -32,7 +32,7 @@ const ethers = require('ethers')
 
 To interact with contracts using ethers, the're a few things we need. We’ll need a connection to the network (provider object) and a way to interact with the contract (contract object). 
 
-Creating the provider object is easy and is the first step in this process. Within the quotations, make sure you add in your own RPC URL for Goerli testnet (we will be working with a smart contract on Goerli testnet) as you pass it to the JsonRpcProvider constructor. You can read more on the JsonRpcProvider here in Ethers documentation.
+Creating the provider object is easy and is the first step in this process. Within the quotations, make sure you add in your own RPC URL for Goerli testnet (we will be working with a smart contract on Goerli testnet) as you pass it to the `JsonRpcProvider` constructor. You can read more on the JsonRpcProvider here in Ethers documentation.
 
 ```js
 const monitorFeed = async function() {
@@ -127,13 +127,13 @@ It might take a few minutes. While you wait, now is a great time to stretch and 
 ```
 
 
-Now what is this? This is the transaction data stored in the data variable from our listener that we made! To get something like the transactionHash out of this, all we have to do is use the following:
+Now what is this? This is the transaction data stored in the data variable from our listener that we made! To get something like the `transactionHash` out of this, all we have to do is use the following:
 
 ```
 data.transactionHash
 ```
 
-We’ll go ahead and modify this now. For this guide, all we want to do is output the transaction hash each time the event is triggered. Then, we’re going to call the checkPrice() function of the sValueFeed contract to get the newly updated S-Value for any price pair. Check out the SupraOracles documentation here for more information on what the checkPrice() function does.
+We’ll go ahead and modify this now. For this guide, all we want to do is output the transaction hash each time the event is triggered. Then, we’re going to call the `checkPrice()` function of the `sValueFeed` contract to get the newly updated S-Value for any price pair. Check out the SupraOracles documentation here for more information on what the `checkPrice()` function does.
 
 # Final Code
 
