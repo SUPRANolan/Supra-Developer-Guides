@@ -1,0 +1,14 @@
+{
+  "name": "monitoring-smart-contract-events",
+  "version": "1.0.0",
+  "description": "Example for monitoring S-Value Price Feed contract event (when S-Value/price is updated).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nolan Edwards @paintbrush",
+  "license": "MIT",
+  "dependencies": {
+    "ethers": "^5.7.2"
+  }
+}
