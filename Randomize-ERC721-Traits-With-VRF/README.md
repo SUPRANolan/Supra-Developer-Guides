@@ -40,60 +40,65 @@ Now is a great time to set up our dependencies. We have three (3) things that we
 
 This contract has become an industry standard that is compliant with the ERC-721 Non-Fungible Token Standard. Don’t be afraid to read through their documentation and explore the expansive functionality that this token standard offers.
 
-    // SPDX-License-Identifier: MIT
-    pragma solidity ^0.8.13;
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.13;
 
-    import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-    contract randomTraits is ERC721 {
+contract randomTraits is ERC721 {
 
-        constructor(address supraSC) ERC721("randomTraits", "RAT") {
-        }
-
+    constructor(address supraSC) ERC721("randomTraits", "RAT") {
     }
 
+}
+```
 Since we’ll be minting tokens in order by ID, we’ll need a way to keep track of which token ID is next in line to be minted. Rather than simply incrementing any uint/int that we declare within our contract, we'll follow the industry standard of using OpenZeppelin’s Counters library. Import OpenZeppelin’s Counters library and then include it with the Using For directive: `using Counters for Counters.Counter;`. While we’re at it, we’ll also go ahead and instantiate a new counter with the name `_tokenIdCounter`.
 
-    // SPDX-License-Identifier: MIT
-    pragma solidity ^0.8.13;
-    
-    import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-    import "@openzeppelin/contracts/utils/Counters.sol";
-    
-    contract randomTraits is ERC721 {
-        using Counters for Counters.Counter;
-        Counters.Counter private _tokenIdCounter;
-    
-        constructor(address supraSC) ERC721("randomTraits", "RAT") {
-    
-        }
-    
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.13;
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+
+contract randomTraits is ERC721 {
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIdCounter;
+
+    constructor(address supraSC) ERC721("randomTraits", "RAT") {
+
     }
+
+}
+```
 
 The final step for our dependencies is declaring the ISupraRouter interface that will allow us to interact with the Supra VRF service. We'll declare an address variable named `supraAddr` that will hold the contract address of the SupraRouter contract which will be passed through our contract constructor upon deployment. We’ll need this later to make our request for a random number. More information on available chains and the relative contract addresses are on our docs. If you haven’t already, now is a great time to take a deeper dive into Supra VRF and the VRF developer guide.
 
-    // SPDX-License-Identifier: MIT
-    pragma solidity ^0.8.13;
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.13;
 
-    import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-    import "@openzeppelin/contracts/utils/Counters.sol";
-    
-    interface ISupraRouter {
-    function generateRequest(string memory _functionSig , uint8 _rngCount, uint256 _numConfirmations, uint256 _clientSeed) external returns(uint256);
-    function generateRequest(string memory _functionSig , uint8 _rngCount, uint256 _numConfirmations) external returns(uint256);
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+
+interface ISupraRouter {
+function generateRequest(string memory _functionSig , uint8 _rngCount, uint256 _numConfirmations, uint256 _clientSeed) external returns(uint256);
+function generateRequest(string memory _functionSig , uint8 _rngCount, uint256 _numConfirmations) external returns(uint256);
+}
+
+contract randomTraits is ERC721 {
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIdCounter;
+    address supraAddr;
+
+    constructor(address supraSC) ERC721("randomTraits", "RAT") {
+        supraAddr = supraSC;
+
     }
-    
-    contract randomTraits is ERC721 {
-        using Counters for Counters.Counter;
-        Counters.Counter private _tokenIdCounter;
-        address supraAddr;
-    
-        constructor(address supraSC) ERC721("randomTraits", "RAT") {
-            supraAddr = supraSC;
-    
-        }
-    
-    }
+
+}
+```
 
 ## Variables
 
@@ -101,15 +106,19 @@ Great! With that out of the way, it's time to declare all of the variables that 
 
 We’ll declare a struct with the name `characterStats`. Within the struct, let’s add three (3) `uint8` variables with the names `level`, `health`, and `strength`. Remember, these will be holding the randomly generated values from the Supra VRF.
 
-    struct playerStats{
-        uint8 level;
-        uint8 health;
-        uint8 strength;
-    }
+```solidity
+struct playerStats{
+    uint8 level;
+    uint8 health;
+    uint8 strength;
+}
+```
 
 For the mapping, what better value to use than the token ID! As per the ERC-721 Non-Fungible Token Standard, the token ID is a `uint256` value. As such, create a mapping of `uint256` to the playerStats struct with the name tokenIdToStats.
 
-    mapping (uint256 => playerStats ) tokenIdToStats;
+```solidity
+mapping (uint256 => playerStats ) tokenIdToStats;
+```
 
 Now, we have one more important variable to create before we move on to our functions. When a user calls our `mint()` function to mint a token, a request to the Supra VRF service will be made.
 
@@ -121,41 +130,45 @@ As such, we can map this nonce value to the address of the original `mint()` cal
 
 To do this, create a `mapping` of type uint256 to address with the name nonceToMinterAddress.
 
-    mapping(uint256 => address) nonceToMinterAddress;
+```solidity
+mapping(uint256 => address) nonceToMinterAddress;
+```
 
 Up until this point, your code should look like this.
 
-    // SPDX-License-Identifier: MIT
-    pragma solidity ^0.8.13;
-    
-    import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-    import "@openzeppelin/contracts/utils/Counters.sol";
-    
-    interface ISupraRouter {
-    function generateRequest(string memory _functionSig , uint8 _rngCount, uint256 _numConfirmations, uint256 _clientSeed) external returns(uint256);
-    function generateRequest(string memory _functionSig , uint8 _rngCount, uint256 _numConfirmations) external returns(uint256);
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.13;
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+
+interface ISupraRouter {
+function generateRequest(string memory _functionSig , uint8 _rngCount, uint256 _numConfirmations, uint256 _clientSeed) external returns(uint256);
+function generateRequest(string memory _functionSig , uint8 _rngCount, uint256 _numConfirmations) external returns(uint256);
+}
+
+contract randomTraits is ERC721 {
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIdCounter;
+    address supraAddr;
+
+    struct playerStats{
+        uint8 level;
+        uint8 health;
+        uint8 strength;
     }
-    
-    contract randomTraits is ERC721 {
-        using Counters for Counters.Counter;
-        Counters.Counter private _tokenIdCounter;
-        address supraAddr;
-    
-        struct playerStats{
-            uint8 level;
-            uint8 health;
-            uint8 strength;
-        }
-    
-        mapping(uint256 => address) nonceToMinterAddress;
-        mapping (uint256 => playerStats ) tokenIdToStats;
-    
-        constructor(address supraSC) ERC721("randomTraits", "RAT") {
-            supraAddr = supraSC;
-    
-        }
-    
+
+    mapping(uint256 => address) nonceToMinterAddress;
+    mapping (uint256 => playerStats ) tokenIdToStats;
+
+    constructor(address supraSC) ERC721("randomTraits", "RAT") {
+        supraAddr = supraSC;
+
     }
+
+}
+```
 
 ## Functions
 
@@ -174,10 +187,12 @@ You’ll see that our parameters passed with the request are as follows:
 `_numConfirmations: 1`  
 `_clientSeed: 123`
 
-    function mint() public {
-        uint256 nonce =  ISupraRouter(supraAddr).generateRequest("finishMint(uint256,uint256[])", 1, 1, 123);
-        nonceToMinterAddress[nonce] = msg.sender;
-    }
+```solidity
+function mint() public {
+    uint256 nonce =  ISupraRouter(supraAddr).generateRequest("finishMint(uint256,uint256[])", 1, 1, 123);
+    nonceToMinterAddress[nonce] = msg.sender;
+}
+```
 
 **finishMint() - Callback function**
 
@@ -187,7 +202,9 @@ As per the Supra VRF docs, callback functions must accept two parameters of `uin
 
 The first step in our callback function is to check to make sure that the calling address is that of the Supra VRF/Router contract. This ensures that only Supra VRF can return values to your callback function.
 
-    require(msg.sender == supraAddr, "only supra router can call this function");
+```solidity
+require(msg.sender == supraAddr, "only supra router can call this function");
+```
 
 Now, it's important to note that our token doesn’t actually exist yet as we haven’t called the `_safeMint()` function belonging to ERC-721. 
 
@@ -197,9 +214,11 @@ The second is the `tokenId` that is next in line to be minted. Luckily, our trus
 
 We'll then pass these two parameters through the `_safeMint()` function.
 
-    uint256 tokenId = _tokenIdCounter.current();
-    _tokenIdCounter.increment();
-    _safeMint(nonceToMinterAddress[nonce], tokenId);
+```solidity
+uint256 tokenId = _tokenIdCounter.current();
+_tokenIdCounter.increment();
+_safeMint(nonceToMinterAddress[nonce], tokenId);
+```
 
 Now, the moment you have all been waiting for.
 
@@ -207,32 +226,38 @@ We are going to use the randomly generated number to get a number between the ra
 
 To do this, we use a combination of modulus and division. Alternatively, we could also request 3 random numbers by changing our `_rngCount` value in the initial request and then assigning the returned values accordingly.
 
-    tokenIdToStats[tokenId].level = uint8((rngList[0] % 100));
-    tokenIdToStats[tokenId].health = uint8((rngList[0] % 10000)/100);
-    tokenIdToStats[tokenId].strength = uint8((rngList[0] % 1000000)/10000);
+```solidity
+tokenIdToStats[tokenId].level = uint8((rngList[0] % 100));
+tokenIdToStats[tokenId].health = uint8((rngList[0] % 10000)/100);
+tokenIdToStats[tokenId].strength = uint8((rngList[0] % 1000000)/10000);
+```
 
 Here's the code for the complete callback function:
 
-    function finishMint(uint256 nonce, uint256[] calldata rngList) external {
-            require(msg.sender == supraAddr, "only supra router can call this function");
-    
-            uint256 tokenId = _tokenIdCounter.current();
-            _tokenIdCounter.increment();
-    
-            _safeMint(nonceToMinterAddress[nonce], tokenId);
-    
-            tokenIdToStats[tokenId].level = uint8((rngList[0] % 100));
-            tokenIdToStats[tokenId].health = uint8((rngList[0] % 10000)/100);
-            tokenIdToStats[tokenId].strength = uint8((rngList[0] % 1000000)/10000);
-        }
+```solidity
+function finishMint(uint256 nonce, uint256[] calldata rngList) external {
+    require(msg.sender == supraAddr, "only supra router can call this function");
+
+    uint256 tokenId = _tokenIdCounter.current();
+    _tokenIdCounter.increment();
+
+    _safeMint(nonceToMinterAddress[nonce], tokenId);
+
+    tokenIdToStats[tokenId].level = uint8((rngList[0] % 100));
+    tokenIdToStats[tokenId].health = uint8((rngList[0] % 10000)/100);
+    tokenIdToStats[tokenId].strength = uint8((rngList[0] % 1000000)/10000);
+}
+```
 
 **getTokenStats() - View function to return token stats/trait values**
 
 The final step is to add our third (3rd) and final function `getTokenStats()` that will return the trait values for the passed token ID.
 
-    function getTokenStats(uint tokenId) external view returns (uint, uint, uint){
-        return (tokenIdToStats[tokenId].level, tokenIdToStats[tokenId].health, tokenIdToStats[tokenId].strength);
-    }
+```solidity
+function getTokenStats(uint tokenId) external view returns (uint, uint, uint){
+    return (tokenIdToStats[tokenId].level, tokenIdToStats[tokenId].health, tokenIdToStats[tokenId].strength);
+}
+```
 
 **levelUpToken() - Function to increase token stats for "leveling up"**
 
@@ -242,6 +267,68 @@ In our example, the only condition we have added is that the token Id must exist
 
 Note: It would be best practice to apply some form of access control to restrict who can call this function. As there is no access control added to this function, any user could call this function to increase their token stats as much as they desired.
 
+```solidity
+function levelUpToken(uint tokenId) external{
+    require(_exists(tokenId), 'Token does not exist.');
+    tokenIdToStats[tokenId].level = tokenIdToStats[tokenId].level + 1;
+    tokenIdToStats[tokenId].health = tokenIdToStats[tokenId].health + 10;
+    tokenIdToStats[tokenId].strength = tokenIdToStats[tokenId].strength + 10;
+}
+```
+# Final Code
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.13;
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+
+interface ISupraRouter {
+function generateRequest(string memory _functionSig , uint8 _rngCount, uint256 _numConfirmations, uint256 _clientSeed) external returns(uint256);
+function generateRequest(string memory _functionSig , uint8 _rngCount, uint256 _numConfirmations) external returns(uint256);
+}
+
+contract randomTraits is ERC721 {
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIdCounter;
+    address supraAddr;
+
+    struct playerStats{
+        uint8 level;
+        uint8 health;
+        uint8 strength;
+    }
+
+    mapping(uint256 => address) nonceToMinterAddress;
+    mapping (uint256 => playerStats ) tokenIdToStats;
+
+    constructor(address supraSC) ERC721("randomTraits", "RAT") {
+        supraAddr = supraSC;
+
+    }
+
+    function mint() public {
+        uint256 nonce =  ISupraRouter(supraAddr).generateRequest("finishMint(uint256,uint256[])", 1, 1, 123);
+        nonceToMinterAddress[nonce] = msg.sender;
+    }
+
+    function finishMint(uint256 nonce, uint256[] calldata rngList) external {
+        require(msg.sender == supraAddr, "only supra router can call this function");
+
+        uint256 tokenId = _tokenIdCounter.current();
+        _tokenIdCounter.increment();
+        _safeMint(nonceToMinterAddress[nonce], tokenId);
+
+        tokenIdToStats[tokenId].level = uint8((rngList[0] % 100));
+        tokenIdToStats[tokenId].health = uint8((rngList[0] % 10000)/100);
+        tokenIdToStats[tokenId].strength = uint8((rngList[0] % 1000000)/10000);
+    }
+
+    function getTokenStats(uint tokenId) external view returns (uint, uint, uint){
+        return (tokenIdToStats[tokenId].level, tokenIdToStats[tokenId].health, tokenIdToStats[tokenId].strength);
+    }
+    
     function levelUpToken(uint tokenId) external{
         require(_exists(tokenId), 'Token does not exist.');
         tokenIdToStats[tokenId].level = tokenIdToStats[tokenId].level + 1;
@@ -249,67 +336,8 @@ Note: It would be best practice to apply some form of access control to restrict
         tokenIdToStats[tokenId].strength = tokenIdToStats[tokenId].strength + 10;
     }
 
-# Final Code
-
-    // SPDX-License-Identifier: MIT
-    pragma solidity ^0.8.13;
-    
-    import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-    import "@openzeppelin/contracts/utils/Counters.sol";
-    
-    interface ISupraRouter {
-    function generateRequest(string memory _functionSig , uint8 _rngCount, uint256 _numConfirmations, uint256 _clientSeed) external returns(uint256);
-    function generateRequest(string memory _functionSig , uint8 _rngCount, uint256 _numConfirmations) external returns(uint256);
-    }
-    
-    contract randomTraits is ERC721 {
-        using Counters for Counters.Counter;
-        Counters.Counter private _tokenIdCounter;
-        address supraAddr;
-    
-        struct playerStats{
-            uint8 level;
-            uint8 health;
-            uint8 strength;
-        }
-    
-        mapping(uint256 => address) nonceToMinterAddress;
-        mapping (uint256 => playerStats ) tokenIdToStats;
-    
-        constructor(address supraSC) ERC721("randomTraits", "RAT") {
-            supraAddr = supraSC;
-    
-        }
-    
-        function mint() public {
-            uint256 nonce =  ISupraRouter(supraAddr).generateRequest("finishMint(uint256,uint256[])", 1, 1, 123);
-            nonceToMinterAddress[nonce] = msg.sender;
-        }
-    
-        function finishMint(uint256 nonce, uint256[] calldata rngList) external {
-            require(msg.sender == supraAddr, "only supra router can call this function");
-    
-            uint256 tokenId = _tokenIdCounter.current();
-            _tokenIdCounter.increment();
-            _safeMint(nonceToMinterAddress[nonce], tokenId);
-    
-            tokenIdToStats[tokenId].level = uint8((rngList[0] % 100));
-            tokenIdToStats[tokenId].health = uint8((rngList[0] % 10000)/100);
-            tokenIdToStats[tokenId].strength = uint8((rngList[0] % 1000000)/10000);
-        }
-    
-        function getTokenStats(uint tokenId) external view returns (uint, uint, uint){
-            return (tokenIdToStats[tokenId].level, tokenIdToStats[tokenId].health, tokenIdToStats[tokenId].strength);
-        }
-        
-        function levelUpToken(uint tokenId) external{
-            require(_exists(tokenId), 'Token does not exist.');
-            tokenIdToStats[tokenId].level = tokenIdToStats[tokenId].level + 1;
-            tokenIdToStats[tokenId].health = tokenIdToStats[tokenId].health + 10;
-            tokenIdToStats[tokenId].strength = tokenIdToStats[tokenId].strength + 10;
-        }
-    
-    }
+}
+```
 
 *Note: in this guide, the token isn't officially minted/created until the callback function `finishMint()` is hit. Alternatively, you could move the minting logic into the request function to ensure that the token is generated prior to the callback being received.*
 
