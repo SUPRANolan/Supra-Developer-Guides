@@ -1,6 +1,6 @@
 # SupraOracles - Monitoring Smart Contract Events // Ethers.js
 
-*This guide uses Ethers.js to monitor the Event of a smart contract. Each time the event occurs we'll be able to perform some arbitrary action.*
+This guide uses Ethers.js to monitor the Event of a smart contract. Each time the event occurs we'll be able to perform some arbitrary action.
 
 # Intro
 
