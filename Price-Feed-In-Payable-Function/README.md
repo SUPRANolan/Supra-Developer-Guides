@@ -11,10 +11,10 @@ If the going rate of ETH is $2000 and the set minting price is $100, we would ex
 
 This is where the S-Value price feeds come into play. In this guide, we will touch on the following.
 
-|                       |          |
-|----------------------------------|-------------------|
-| Interfaces | Modifiers  |
-| SupraOracles S-Value Price Feeds | Payable Functions |
+* Interfaces
+* Modifiers
+* SupraOracles S-Value Price Feeds
+* Payable Functions
 
 *Note: For the sake of this guide, we won't be implementing the minting function/ERC-721 token. We'll focus solely on the use of price feeds to validate the amount sent to any payable function.*
 
