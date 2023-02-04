@@ -23,16 +23,17 @@ token traits.
 First thing’s first, make a new solidity file `randomTraits.sol` and declare our contract
 `randomTraits` with an empty constructor.
 
-    // SPDX-License-Identifier: MIT
-    pragma solidity ^0.8.13;
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.13;
 
-    contract randomTraits {
+contract randomTraits {
 
-        constructor(){
-        }
-
+    constructor(){
     }
 
+}
+```
 ## Dependencies
 
 Now is a great time to set up our dependencies. We have three (3) things that we need to do. First, we'll import OpenZeppelin's ERC-721, inherit it, and then update our constructor accordingly. The constructor of the ERC-721 contract accepts two parameters. The first parameter is the name of the token and the second parameter is the symbol. We’ll be naming it `randomTraits` with the symbol `RAT`, but you can name yours whatever you want.
