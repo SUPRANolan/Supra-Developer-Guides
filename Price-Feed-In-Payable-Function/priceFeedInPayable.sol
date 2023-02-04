@@ -8,7 +8,7 @@ interface ISupraSValueFeed {
     function checkPrice(string memory marketPair) external view returns (int256 price, uint256 timestamp);
 }
  
-contract PayableEtherExample {
+contract priceFeedInPayable {
     int mintPrice;
     ISupraSValueFeed sValueFeed;
     address owner;
