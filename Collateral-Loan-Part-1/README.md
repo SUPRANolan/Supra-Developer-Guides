@@ -1,3 +1,6 @@
+2/22/2023 (this readme is not complete)
+can view full guide https://supraoracles.com/docs/development-guides/ether-to-usdc-collateral-loan-part-1-solidity
+
 # SupraOracles - Simple Ether to USDC Collateral loan (Part 1) //Solidity
 
 This guide uses our S-Value Price Feeds to offer Ether to USDC collateral loans. EVM- Solidity
